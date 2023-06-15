@@ -1,0 +1,48 @@
+﻿
+
+<h2>Products</h2>
+
+<div class="row" id="cart" >
+</div>
+
+
+
+<script>
+    loadingProducts();
+    function loadingProducts() {
+        $.ajax({
+            type: "get",
+            url: "/api/Store",
+            success: function (response) {
+                console.log(response);
+                var cart;
+                $.each(response, function (k, v) {
+                    cart += `
+                    <div class="col-md-4">
+                        <img src="${v.imageURL}" width="100%" height="300px" />
+                        <div class="card" style="width: 18rem;">
+                                
+                            <h1>${v.name}+ ${v.id}</h1>
+                            <div class="card-body">
+                                <h4 class="card-title"><b>${v.title}</b></h4>
+                                <p class="card-text">${v.logDescription}</p>
+                                <p class="card-text"><b>Price :</b> ${v.price}</p>
+                            </div>
+                            <div class="card-foot">
+                                <a href="#" class="btn btn-primary">Add To Cart</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                });
+                $("#cart").html(cart);
+            },
+            error: function () {
+                alert();
+            }
+         }); 
+    }
+</script>
+
+
+

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="7bcb0ed69bb04af2955090be575ea0b6" Name="Diagram1" ZoomLevel="86" >
+        <EntityTypeShape EntityType="userManagementModel.role" Width="1.5" PointX="3.375" PointY="1" />
+        <EntityTypeShape EntityType="userManagementModel.user" Width="1.5" PointX="0.875" PointY="3.25" />
+        <EntityTypeShape EntityType="userManagementModel.usersRole" Width="1.5" PointX="3.625" PointY="3.875" />
+        <AssociationConnector Association="userManagementModel.FK__usersRole__roleI__173876EA" />
+        <AssociationConnector Association="userManagementModel.FK__usersRole__userI__164452B1" />
+        <EntityTypeShape EntityType="userManagementModel.product" Width="1.5" PointX="6.75" PointY="3.25" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

@@ -1,0 +1,54 @@
+﻿@model user
+@{
+    ViewBag.Title = "Registor";
+}
+
+<h2>Registor</h2>
+
+
+<div class="container">
+
+    <div class="row">
+    @using (Html.BeginForm())
+    {
+        <div class="col-8">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="">UserName</label>
+                        @Html.TextBoxFor(m => m.name, null, new { @class = "form-control", placeholder = "Enter UserName" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="">User Email</label>
+                        @Html.TextBoxFor(m => m.email, null, new { @class = "form-control", placeholder = "Enter Email" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="">Password</label>
+                        @Html.PasswordFor(m => m.password, new { @class = "form-control", placeholder = "Enter Password" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="">Contact</label>
+                        @Html.TextBoxFor(m => m.contact, null, new { @class = "form-control", placeholder = "Enter Contact" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="">Contact</label>
+                        @Html.TextBoxFor(m => m.contact, null, new { @class = "form-control", placeholder = "Enter Contact" })
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+        
+        <button class="btn btn-primary" type="submit">Registor</button>
+    }
+    </div>
+</div>

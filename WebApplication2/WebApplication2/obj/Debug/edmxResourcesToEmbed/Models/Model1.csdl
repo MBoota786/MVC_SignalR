@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="userManagementModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityContainer Name="userManagementEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="roles" EntityType="userManagementModel.role" />
+    <EntitySet Name="users" EntityType="userManagementModel.user" />
+    <EntitySet Name="usersRoles" EntityType="userManagementModel.usersRole" />
+    <AssociationSet Name="FK__usersRole__roleI__173876EA" Association="userManagementModel.FK__usersRole__roleI__173876EA">
+      <End Role="role" EntitySet="roles" />
+      <End Role="usersRole" EntitySet="usersRoles" />
+    </AssociationSet>
+    <AssociationSet Name="FK__usersRole__userI__164452B1" Association="userManagementModel.FK__usersRole__userI__164452B1">
+      <End Role="user" EntitySet="users" />
+      <End Role="usersRole" EntitySet="usersRoles" />
+    </AssociationSet>
+    <EntitySet Name="products" EntityType="userManagementModel.product" />
+  </EntityContainer>
+  <EntityType Name="role">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="name" Type="String" Nullable="false" MaxLength="25" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="usersRoles" Relationship="userManagementModel.FK__usersRole__roleI__173876EA" FromRole="role" ToRole="usersRole" />
+  </EntityType>
+  <EntityType Name="user">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="name" Type="String" Nullable="false" MaxLength="25" FixedLength="false" Unicode="false" />
+    <Property Name="email" Type="String" Nullable="false" MaxLength="25" FixedLength="false" Unicode="false" />
+    <Property Name="password" Type="String" Nullable="false" MaxLength="25" FixedLength="false" Unicode="false" />
+    <Property Name="contact" Type="String" Nullable="false" MaxLength="25" FixedLength="false" Unicode="false" />
+    <Property Name="gender" Type="Boolean" Nullable="false" />
+    <NavigationProperty Name="usersRoles" Relationship="userManagementModel.FK__usersRole__userI__164452B1" FromRole="user" ToRole="usersRole" />
+  </EntityType>
+  <EntityType Name="usersRole">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="userId" Type="Int32" />
+    <Property Name="roleId" Type="Int32" />
+    <NavigationProperty Name="role" Relationship="userManagementModel.FK__usersRole__roleI__173876EA" FromRole="usersRole" ToRole="role" />
+    <NavigationProperty Name="user" Relationship="userManagementModel.FK__usersRole__userI__164452B1" FromRole="usersRole" ToRole="user" />
+  </EntityType>
+  <Association Name="FK__usersRole__roleI__173876EA">
+    <End Type="userManagementModel.role" Role="role" Multiplicity="0..1" />
+    <End Type="userManagementModel.usersRole" Role="usersRole" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="role">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="usersRole">
+        <PropertyRef Name="roleId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__usersRole__userI__164452B1">
+    <End Type="userManagementModel.user" Role="user" Multiplicity="0..1" />
+    <End Type="userManagementModel.usersRole" Role="usersRole" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="user">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="usersRole">
+        <PropertyRef Name="userId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="product">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="name" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+    <Property Name="title" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+    <Property Name="price" Type="Decimal" Precision="19" Scale="4" />
+    <Property Name="logDescription" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+    <Property Name="shortDescription" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="qrcode" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+    <Property Name="imageURL" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+  </EntityType>
+</Schema>

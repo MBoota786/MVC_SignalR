@@ -1,0 +1,242 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="userManagementModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="products">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="varchar" MaxLength="25" />
+          <Property Name="title" Type="varchar" MaxLength="40" />
+          <Property Name="price" Type="money" />
+          <Property Name="logDescription" Type="varchar" MaxLength="500" />
+          <Property Name="shortDescription" Type="varchar" MaxLength="100" />
+          <Property Name="qrcode" Type="varchar" MaxLength="25" />
+          <Property Name="imageURL" Type="varchar" MaxLength="500" />
+        </EntityType>
+        <EntityType Name="roles">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="varchar" MaxLength="25" Nullable="false" />
+        </EntityType>
+        <EntityType Name="users">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="varchar" MaxLength="25" Nullable="false" />
+          <Property Name="email" Type="varchar" MaxLength="25" Nullable="false" />
+          <Property Name="password" Type="varchar" MaxLength="25" Nullable="false" />
+          <Property Name="contact" Type="varchar" MaxLength="25" Nullable="false" />
+          <Property Name="gender" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="usersRoles">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="userId" Type="int" />
+          <Property Name="roleId" Type="int" />
+        </EntityType>
+        <Association Name="FK__usersRole__roleI__173876EA">
+          <End Role="roles" Type="Self.roles" Multiplicity="0..1" />
+          <End Role="usersRoles" Type="Self.usersRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="roles">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="usersRoles">
+              <PropertyRef Name="roleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__usersRole__userI__164452B1">
+          <End Role="users" Type="Self.users" Multiplicity="0..1" />
+          <End Role="usersRoles" Type="Self.usersRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="users">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="usersRoles">
+              <PropertyRef Name="userId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="userManagementModelStoreContainer">
+          <EntitySet Name="products" EntityType="Self.products" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="roles" EntityType="Self.roles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="users" EntityType="Self.users" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="usersRoles" EntityType="Self.usersRoles" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__usersRole__roleI__173876EA" Association="Self.FK__usersRole__roleI__173876EA">
+            <End Role="roles" EntitySet="roles" />
+            <End Role="usersRoles" EntitySet="usersRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK__usersRole__userI__164452B1" Association="Self.FK__usersRole__userI__164452B1">
+            <End Role="users" EntitySet="users" />
+            <End Role="usersRoles" EntitySet="usersRoles" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="userManagementModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="userManagementEntities" annotation:LazyLoadingEnabled="true" >
+          <EntitySet Name="roles" EntityType="userManagementModel.role" />
+          <EntitySet Name="users" EntityType="userManagementModel.user" />
+          <EntitySet Name="usersRoles" EntityType="userManagementModel.usersRole" />
+          <AssociationSet Name="FK__usersRole__roleI__173876EA" Association="userManagementModel.FK__usersRole__roleI__173876EA">
+            <End Role="role" EntitySet="roles" />
+            <End Role="usersRole" EntitySet="usersRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK__usersRole__userI__164452B1" Association="userManagementModel.FK__usersRole__userI__164452B1">
+            <End Role="user" EntitySet="users" />
+            <End Role="usersRole" EntitySet="usersRoles" />
+          </AssociationSet>
+          <EntitySet Name="products" EntityType="userManagementModel.product" />
+        </EntityContainer>
+        <EntityType Name="role">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" Nullable="false" MaxLength="25" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="usersRoles" Relationship="userManagementModel.FK__usersRole__roleI__173876EA" FromRole="role" ToRole="usersRole" />
+        </EntityType>
+        <EntityType Name="user">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" Nullable="false" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="email" Type="String" Nullable="false" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="password" Type="String" Nullable="false" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="contact" Type="String" Nullable="false" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="gender" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="usersRoles" Relationship="userManagementModel.FK__usersRole__userI__164452B1" FromRole="user" ToRole="usersRole" />
+        </EntityType>
+        <EntityType Name="usersRole">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="userId" Type="Int32" />
+          <Property Name="roleId" Type="Int32" />
+          <NavigationProperty Name="role" Relationship="userManagementModel.FK__usersRole__roleI__173876EA" FromRole="usersRole" ToRole="role" />
+          <NavigationProperty Name="user" Relationship="userManagementModel.FK__usersRole__userI__164452B1" FromRole="usersRole" ToRole="user" />
+        </EntityType>
+        <Association Name="FK__usersRole__roleI__173876EA">
+          <End Type="userManagementModel.role" Role="role" Multiplicity="0..1" />
+          <End Type="userManagementModel.usersRole" Role="usersRole" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="role">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="usersRole">
+              <PropertyRef Name="roleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__usersRole__userI__164452B1">
+          <End Type="userManagementModel.user" Role="user" Multiplicity="0..1" />
+          <End Type="userManagementModel.usersRole" Role="usersRole" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="user">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="usersRole">
+              <PropertyRef Name="userId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="product">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="title" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+          <Property Name="price" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="logDescription" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="shortDescription" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="qrcode" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="imageURL" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+        </EntityType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="userManagementModelStoreContainer" CdmEntityContainer="userManagementEntities" >
+          <EntitySetMapping Name="roles">
+            <EntityTypeMapping TypeName="userManagementModel.role">
+              <MappingFragment StoreEntitySet="roles">
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="users">
+            <EntityTypeMapping TypeName="userManagementModel.user">
+              <MappingFragment StoreEntitySet="users">
+                <ScalarProperty Name="gender" ColumnName="gender" />
+                <ScalarProperty Name="contact" ColumnName="contact" />
+                <ScalarProperty Name="password" ColumnName="password" />
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="usersRoles">
+            <EntityTypeMapping TypeName="userManagementModel.usersRole">
+              <MappingFragment StoreEntitySet="usersRoles">
+                <ScalarProperty Name="roleId" ColumnName="roleId" />
+                <ScalarProperty Name="userId" ColumnName="userId" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="products">
+            <EntityTypeMapping TypeName="userManagementModel.product">
+              <MappingFragment StoreEntitySet="products">
+                <ScalarProperty Name="imageURL" ColumnName="imageURL" />
+                <ScalarProperty Name="qrcode" ColumnName="qrcode" />
+                <ScalarProperty Name="shortDescription" ColumnName="shortDescription" />
+                <ScalarProperty Name="logDescription" ColumnName="logDescription" />
+                <ScalarProperty Name="price" ColumnName="price" />
+                <ScalarProperty Name="title" ColumnName="title" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

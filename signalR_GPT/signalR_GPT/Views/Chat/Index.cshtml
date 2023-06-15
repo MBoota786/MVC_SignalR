@@ -1,0 +1,43 @@
+﻿@model List<User>
+
+<h1>Private Chat</h1>
+<h3>@User.Identity.Name</h3>
+<ul>
+    @foreach (var user in Model)
+    {
+        <li><a href="@Url.Action("Conversation", new { receiverId = user.Id })">@user.Email</a></li>
+    }
+</ul>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+
+            connection.start().then(function () {
+                console.log("SignalR connected.");
+            }).catch(function (err) {
+                return console.error(err.toString());
+            });
+
+            $("form").on("submit", function (event) {
+                event.preventDefault();
+                var receiverId = $("#receiverId").val();
+                var content = $("#messageInput").val();
+                connection.invoke("SendMessage", receiverId, content).catch(function (err) {
+                    return console.error(err.toString());
+                });
+                $("#messageInput").val("");
+            });
+
+            connection.on("ReceiveMessage", function (senderName, content, isSender) {
+                var messageClass = isSender ? "text-right" : "text-left";
+                var messageContent = "<p class='" + messageClass + "'>" + senderName + ": " + content + "</p>";
+                $("#messageContainer").append(messageContent);
+            });
+        });
+    </script>
+}

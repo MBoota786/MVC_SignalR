@@ -1,0 +1,27 @@
+﻿@model role
+@{
+    ViewBag.Title = "UsersRoles";
+}
+
+<hr />
+<h3>Update</h3>
+
+<div class="row">
+    @using (Html.BeginForm("EditRole","Admin",FormMethod.Post))
+    {
+        <div class="container">
+            <div class="col-8">
+
+
+                <div class="form-group">
+                    @Html.HiddenFor(m => m.id)
+                </div>
+                <div class="form-group">
+                    <label class="">RoleName</label>
+                    @Html.TextBoxFor(m => m.name,null, new { @class = "form-control", placeholder = "Enter Password" })
+                </div>
+            </div>
+            <button class="btn btn-primary" type="submit">Update</button>
+        </div>
+    }
+</div>

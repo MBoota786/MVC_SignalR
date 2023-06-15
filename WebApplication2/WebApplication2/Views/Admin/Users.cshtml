@@ -1,0 +1,32 @@
+﻿@model IEnumerable<WebApplication2.Models.user>
+@{
+    ViewBag.Title = "Users";
+    Layout = "~/Views/Shared/_Layout1.cshtml";
+}
+
+<h2>Users</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Password</th>
+            <th>Phone</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.id</td>
+                <td>@item.name</td>
+                <td>@item.email</td>
+                <td>@item.password</td>
+                <td>@item.contact</td>
+            </tr>
+        }
+    </tbody>
+</table>
+

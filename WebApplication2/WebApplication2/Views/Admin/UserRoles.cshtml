@@ -1,0 +1,74 @@
+﻿@model roleAssign_VM
+@{
+    ViewBag.Title = "UsersRoles";
+    Layout = "~/Views/Shared/_Layout1.cshtml";
+}
+
+<h2>UsersRoles</h2>
+
+<div class="row">
+    <div class="col-md-12">
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>UserName</th>
+                    <th>Roles</th>
+                    <th>Assign Roles</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model.userList)
+                {
+                <tr>
+                    <td>@user.name</td>
+                    <td>
+                        @foreach (var userRole in Model.userRoleList)
+                        {
+                            if (userRole.userId == user.id)
+                            {
+                                foreach (var item2 in Model.roleList)
+                                {
+                                    if (userRole.roleId == item2.id)
+                                    {
+                                        <span>@item2.name , </span>
+                                    }
+                                }
+                            }
+                        }
+                    </td>
+                    <td>
+                        <button class="btn-sm btn-warning assignRole" data-id="@user.id">SingleRole</button>
+                        <button class="btn-sm btn-danger assignRole" data-id="@user.id">MultipleRoles</button>
+                    </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div id="roleAssign">
+
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+
+    $(".assignRole").click(function () {
+        var id = $(this).attr("data-id");
+        alert(id);
+        debugger;
+        $.ajax({
+            type: "get",
+            url: "/Admin/AssignRole/" + id,
+            success: function (response) {
+                $("#roleAssign").html(response);
+            },
+            error: function (response) {
+                alert("error");
+            }
+        })
+    });
+</script>

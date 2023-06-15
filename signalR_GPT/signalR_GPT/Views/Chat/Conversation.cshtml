@@ -1,0 +1,50 @@
+﻿@model List<Message>
+
+<h1>Conversation with @ViewBag.ReceiverName</h1>
+
+<div id="messageContainer">
+    @foreach (var message in Model)
+    {
+        var messageClass = message.IsSender ? "text-right" : "text-left";
+        <p class="@messageClass">@message.Content</p>
+    }
+</div>
+
+<form id="sendMessageForm">
+    <input type="hidden" id="receiverId" value="@ViewBag.ReceiverId" />
+    <input type="text" id="messageInput" />
+    <input type="submit" value="Send" />
+</form>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            var connection = new signalR.HubConnectionBuilder().withUrl("/chathub").build();
+
+            connection.start().then(function () {
+                console.log("SignalR connected.");
+            }).catch(function (err) {
+                return console.error(err.toString());
+            });
+
+            $("#sendMessageForm").on("submit", function (event) {
+                event.preventDefault();
+                var receiverId = $("#receiverId").val();
+                var content = $("#messageInput").val();
+                connection.invoke("SendMessage", receiverId, content).catch(function (err) {
+                    return console.error(err.toString());
+                });
+                $("#messageInput").val("");
+            });
+
+            connection.on("ReceiveMessage", function (senderName, content, isSender) {
+                var messageClass = isSender ? "text-right" : "text-left";
+                var messageContent = "<p class='" + messageClass + "'>" + senderName + ": " + content + "</p>";
+                $("#messageContainer").append(messageContent);
+            });
+        });
+    </script>
+}

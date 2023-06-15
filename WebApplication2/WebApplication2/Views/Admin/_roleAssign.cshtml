@@ -1,0 +1,50 @@
+﻿@model roleAssign_VM
+@{
+    ViewBag.Title = "UsersRoles";
+}
+
+<hr />
+<h3>Assign Roles</h3>
+
+<div class="row">
+    @using (Html.BeginForm("AssignRole", "Admin"))
+    {
+        <div class="container">
+            <div class="col-8">
+                <div class="form-group">
+                    @Html.HiddenFor(m => m.user.id)
+                    @{ 
+                        var rolId = Model.userRoleList.Where(x => x.userId == Model.user.id).ToList();
+
+                    }
+                </div>
+
+                <div class="form-group">
+                    <label class="">RoleName</label>
+                    @for (int b = 0; b < rolId.Count; b++)
+                    {
+                        for (int i = 0; i < Model.roleList.Count; i++)
+                        {
+
+                            @*<input type="checkbox" @(Model.roleList[i].id == rolId[b].roleId ? "checked" : "") name="checkObject" />*@ @*@Model.roleList[i].name*@
+
+                            if (rolId[b].roleId == Model.roleList[i].id)
+                            {
+                                <input type="checkbox" name="checkObject" checked /> @Model.roleList[i].name
+                            }
+                            else
+                            {
+                                <input type="checkbox" name="checkObject" /> @Model.roleList[i].name
+                            }
+                        }
+                        break;
+                    }
+
+                    
+
+                </div>
+            </div>
+            <button class="btn btn-primary" type="submit">Update</button>
+        </div>
+    }
+</div>

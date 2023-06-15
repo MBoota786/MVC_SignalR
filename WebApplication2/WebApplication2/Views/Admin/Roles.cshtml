@@ -1,0 +1,81 @@
+﻿@model IEnumerable<WebApplication2.Models.role>
+@{
+    ViewBag.Title = "Users";
+    Layout = "~/Views/Shared/_Layout1.cshtml";
+}
+
+<h2>Roles</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        @if (TempData["error"] != null)
+        {
+            <div class="alert alert-danger">
+                @TempData["error"]
+            </div>
+        }
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.id</td>
+                        <td>@item.name</td>
+                        <th>
+                            <a href="#" class="btn-sm editbtn" data-id="@item.id">Edit</a>
+                            @Html.ActionLink("Delete", "DeleteRole", new { id = item.id }, new { @class = "btn-sm btn-danger" })
+                        </th>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div id="edit">
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<script class="">
+
+    $(".editbtn").click(function () {
+        var id = $(this).attr("data-id");
+        alert(id);
+        $.ajax({
+            type: "get",
+            url: "/Admin/EditRole/" + id,
+            success: function (response) {
+                $("#edit").html(response);
+            },
+            error: function (response) {
+                alert("error");
+            }
+        })
+    });
+    //$(".deletebtn").click(function () {
+    //    var id = $(this).attr("data-id");
+    //    alert(id);
+    //    $.ajax({
+    //        type: "get",
+    //        url: "/Admin/DeleteRole/" + id,
+    //        success: function (response) {
+    //            $("#edit").html(response);
+    //        },
+    //        error: function (response) {
+    //            alert("error");
+    //        }
+    //    })
+    //})
+</script>
+
