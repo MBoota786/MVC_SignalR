@@ -29,7 +29,6 @@ namespace signalR_GPT.Controllers
 
         public async Task<IActionResult> Index()
         {
-
             var currentUser = await _userManager.GetUserAsync(User);
             var users = await _userManager.Users.Where(u => u.Id != currentUser.Id).ToListAsync();
 

@@ -1,14 +1,20 @@
 ﻿@model List<Message>
 
+<link href="~/css/message.css" rel="stylesheet" />
+
 <h1>Conversation with @ViewBag.ReceiverName</h1>
 
-<div id="messageContainer">
+<div id="container">
     @foreach (var message in Model)
     {
-        var messageClass = message.IsSender ? "text-right" : "text-left";
-        <p class="@messageClass">@message.Content</p>
+        var messageClass = message.IsSender ? "message-orange" : "message-blue";
+        var messageTimeSend = message.IsSender ? "message-timestamp-right" : "message-timestamp-left";
+        <div class="@messageClass">
+            <p class="message-content">@message.Content</p>
+        </div>
     }
 </div>
+
 
 <form id="sendMessageForm">
     <input type="hidden" id="receiverId" value="@ViewBag.ReceiverId" />
@@ -41,9 +47,9 @@
             });
 
             connection.on("ReceiveMessage", function (senderName, content, isSender) {
-                var messageClass = isSender ? "text-right" : "text-left";
+                var messageClass = isSender ? "message-orange" : "message-blue";
                 var messageContent = "<p class='" + messageClass + "'>" + senderName + ": " + content + "</p>";
-                $("#messageContainer").append(messageContent);
+                $("#container").append(messageContent);
             });
         });
     </script>

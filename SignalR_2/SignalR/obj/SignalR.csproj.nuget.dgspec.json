@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Evolve\\Evolve-master\\UI .net\\SignalR_2\\SignalR\\SignalR.csproj": {}
+    "D:\\PK\\Evolve\\UI .net\\SignalR_2\\SignalR\\SignalR.csproj": {}
   },
   "projects": {
-    "D:\\Evolve\\Evolve-master\\UI .net\\SignalR_2\\SignalR\\SignalR.csproj": {
+    "D:\\PK\\Evolve\\UI .net\\SignalR_2\\SignalR\\SignalR.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Evolve\\Evolve-master\\UI .net\\SignalR_2\\SignalR\\SignalR.csproj",
+        "projectUniqueName": "D:\\PK\\Evolve\\UI .net\\SignalR_2\\SignalR\\SignalR.csproj",
         "projectName": "SignalR",
-        "projectPath": "D:\\Evolve\\Evolve-master\\UI .net\\SignalR_2\\SignalR\\SignalR.csproj",
+        "projectPath": "D:\\PK\\Evolve\\UI .net\\SignalR_2\\SignalR\\SignalR.csproj",
         "packagesPath": "C:\\Users\\STARIZ.PK\\.nuget\\packages\\",
-        "outputPath": "D:\\Evolve\\Evolve-master\\UI .net\\SignalR_2\\SignalR\\obj\\",
+        "outputPath": "D:\\PK\\Evolve\\UI .net\\SignalR_2\\SignalR\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\STARIZ.PK\\AppData\\Roaming\\NuGet\\NuGet.Config",
