@@ -35,6 +35,41 @@ namespace signalR_GPT.Controllers
             return View(users);
         }
 
+        //public async Task<IActionResult> Conversation(string receiverId)
+        //{
+        //    var currentUser = await _userManager.GetUserAsync(User);
+        //    var receiver = await _userManager.FindByIdAsync(receiverId);
+
+        //    if (receiver == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    var messages = await _dbContext.Messages
+        //        .Where(m => (m.SenderId == currentUser.Id && m.ReceiverId == receiver.Id)
+        //                    || (m.SenderId == receiver.Id && m.ReceiverId == currentUser.Id))
+        //        .OrderBy(m => m.SentTime)
+        //        .ToListAsync();
+
+        //    foreach (var message in messages)
+        //    {
+        //        if (message.SenderId == currentUser.Id)
+        //        {
+        //            message.IsSender = true;
+        //            message.IsReceiver = false;
+        //        }
+        //        else
+        //        {
+        //            message.IsSender = false;
+        //            message.IsReceiver = true;
+        //        }
+        //    }
+
+        //    ViewBag.ReceiverId = receiverId;
+        //    ViewBag.ReceiverName = receiver.Email;
+
+        //    return View(messages);
+        //}
         public async Task<IActionResult> Conversation(string receiverId)
         {
             var currentUser = await _userManager.GetUserAsync(User);
@@ -70,5 +105,7 @@ namespace signalR_GPT.Controllers
 
             return View(messages);
         }
+
+
     }
 }

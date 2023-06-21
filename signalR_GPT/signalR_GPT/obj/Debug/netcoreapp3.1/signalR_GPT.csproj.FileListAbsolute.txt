@@ -1,8 +1,5 @@
 D:\PK\Evolve\UI .net\signalR_GPT\signalR_GPT\bin\Debug\netcoreapp3.1\appsettings.Development.json
 D:\PK\Evolve\UI .net\signalR_GPT\signalR_GPT\bin\Debug\netcoreapp3.1\appsettings.json
-D:\PK\Evolve\UI .net\signalR_GPT\signalR_GPT\bin\Debug\netcoreapp3.1\Properties\launchSettings.json
-D:\PK\Evolve\UI .net\signalR_GPT\signalR_GPT\bin\Debug\netcoreapp3.1\Properties\serviceDependencies.json
-D:\PK\Evolve\UI .net\signalR_GPT\signalR_GPT\bin\Debug\netcoreapp3.1\Properties\serviceDependencies.local.json
 D:\PK\Evolve\UI .net\signalR_GPT\signalR_GPT\bin\Debug\netcoreapp3.1\signalR_GPT.StaticWebAssets.xml
 D:\PK\Evolve\UI .net\signalR_GPT\signalR_GPT\bin\Debug\netcoreapp3.1\signalR_GPT.exe
 D:\PK\Evolve\UI .net\signalR_GPT\signalR_GPT\bin\Debug\netcoreapp3.1\signalR_GPT.deps.json
@@ -433,3 +430,5 @@ D:\PK\Evolve\UI .net\signalR_GPT\signalR_GPT\obj\Debug\netcoreapp3.1\signalR_GPT
 D:\PK\Evolve\UI .net\signalR_GPT\signalR_GPT\bin\Debug\netcoreapp3.1\libman.json
 D:\PK\Evolve\UI .net\signalR_GPT\signalR_GPT\obj\Debug\netcoreapp3.1\Razor\Views\Chat\Index.cshtml.g.cs
 D:\PK\Evolve\UI .net\signalR_GPT\signalR_GPT\obj\Debug\netcoreapp3.1\Razor\Views\Chat\Conversation.cshtml.g.cs
+D:\PK\Evolve\UI .net\signalR_GPT\signalR_GPT\obj\Debug\netcoreapp3.1\signalR_GPT.GeneratedMSBuildEditorConfig.editorconfig
+D:\PK\Evolve\UI .net\signalR_GPT\signalR_GPT\obj\Debug\netcoreapp3.1\scopedcss\bundle\signalR_GPT.styles.css

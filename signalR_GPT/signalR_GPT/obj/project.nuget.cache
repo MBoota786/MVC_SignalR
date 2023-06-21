@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "ILt/wGSxJOCs9CVfEVi1ydWyptjHGu4pz2hNxrV5DqUr85LIenZhPBXvz3iH/fqg+R6w1gkMxlDvP6jsSWLz8g==",
+  "dgSpecHash": "Io1bo1twjxWJF94Z5iExc/uHqW2u+LLu+02Co2IevBxHNHHLZY30ek6zCNtqURfAHLyJV93/e3jp66NTOfQl9g==",
   "success": true,
   "projectFilePath": "D:\\PK\\Evolve\\UI .net\\signalR_GPT\\signalR_GPT\\signalR_GPT.csproj",
   "expectedPackageFiles": [
@@ -175,7 +175,8 @@
     "C:\\Users\\STARIZ.PK\\.nuget\\packages\\system.xml.readerwriter\\4.3.0\\system.xml.readerwriter.4.3.0.nupkg.sha512",
     "C:\\Users\\STARIZ.PK\\.nuget\\packages\\system.xml.xdocument\\4.3.0\\system.xml.xdocument.4.3.0.nupkg.sha512",
     "C:\\Users\\STARIZ.PK\\.nuget\\packages\\system.xml.xmldocument\\4.3.0\\system.xml.xmldocument.4.3.0.nupkg.sha512",
-    "C:\\Users\\STARIZ.PK\\.nuget\\packages\\system.xml.xmlserializer\\4.3.0\\system.xml.xmlserializer.4.3.0.nupkg.sha512"
+    "C:\\Users\\STARIZ.PK\\.nuget\\packages\\system.xml.xmlserializer\\4.3.0\\system.xml.xmlserializer.4.3.0.nupkg.sha512",
+    "C:\\Users\\STARIZ.PK\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\3.1.25\\microsoft.netcore.app.host.win-x64.3.1.25.nupkg.sha512"
   ],
   "logs": []
 }
