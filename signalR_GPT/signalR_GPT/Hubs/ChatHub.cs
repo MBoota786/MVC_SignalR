@@ -11,7 +11,6 @@ namespace signalR_GPT.Hubs
 {
     public class ChatHub : Hub
     {
-
         //____________________________ 1st  simple send message ____________________________
         #region Simple_Send_Message
         private readonly ApplicationDbContext _dbContext;
