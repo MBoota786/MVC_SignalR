@@ -36,11 +36,13 @@ namespace SignalR_Complete.Controllers
                 return NotFound();
             }
 
-            // Get the groups that the user is a member of
+            // Get the groups that have some users inside
             var groups = _dbContext.GroupUser
-                .Where(gu => gu.UserId == userId)
                 .Include(gu => gu.Group)
                 .Select(gu => gu.Group)
+                .ToList()
+                .GroupBy(g => g.Name)
+                .Select(g => g.FirstOrDefault())
                 .ToList();
 
             var model = new IndexViewModel

@@ -1,0 +1,29 @@
+﻿@model GroupAssignmentViewModel
+
+<h2>Group Assignment - User Assignment</h2>
+
+@using (Html.BeginForm("AssignUsers", "GroupAssignment", FormMethod.Post))
+{
+    <div>
+        <label for="groupId">Selected Group:</label>
+        <label><b>@(Model.SelectedGroup)</b></label>
+        <input type="text" id="selectedGroup" name="selectedGroup" value="@Model.SelectedGroup" hidden/>
+    </div>
+    <div>
+        <label for="userId">Select Users:</label>
+        <select name="userIds" id="userId" multiple>
+            @foreach (var user in Model.Users)
+            {
+                <option value="@user.Id">@user.UserName</option>
+            }
+        </select>
+    </div>
+    <div>
+        <button type="submit" class="btn btn-primary">Assign Users</button>
+    </div>
+}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    
+</script>

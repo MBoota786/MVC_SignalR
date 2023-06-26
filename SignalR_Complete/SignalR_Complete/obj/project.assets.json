@@ -6188,11 +6188,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\STARIZ.PK\\source\\repos\\SignalR_Complete\\SignalR_Complete\\SignalR_Complete.csproj",
+      "projectUniqueName": "D:\\PK\\Evolve\\UI .net\\SignalR_Complete\\SignalR_Complete\\SignalR_Complete.csproj",
       "projectName": "SignalR_Complete",
-      "projectPath": "C:\\Users\\STARIZ.PK\\source\\repos\\SignalR_Complete\\SignalR_Complete\\SignalR_Complete.csproj",
+      "projectPath": "D:\\PK\\Evolve\\UI .net\\SignalR_Complete\\SignalR_Complete\\SignalR_Complete.csproj",
       "packagesPath": "C:\\Users\\STARIZ.PK\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\STARIZ.PK\\source\\repos\\SignalR_Complete\\SignalR_Complete\\obj\\",
+      "outputPath": "D:\\PK\\Evolve\\UI .net\\SignalR_Complete\\SignalR_Complete\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\STARIZ.PK\\AppData\\Roaming\\NuGet\\NuGet.Config",

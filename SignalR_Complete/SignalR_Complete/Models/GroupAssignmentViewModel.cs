@@ -9,5 +9,7 @@ namespace SignalR_Complete.Models
     {
         public List<AppUser> Users { get; set; }
         public List<Group> Groups { get; set; }
+
+        public string SelectedGroup { get; set; }
     }
 }

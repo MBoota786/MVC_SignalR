@@ -1,0 +1,18 @@
+﻿@model Group
+
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <form asp-action="AddGroup" asp-controller="GroupAssignment">
+                <div class="form-group">
+                    <label class="from-label">Group Name </label>
+                    <input class="form from-control" asp-for="Name" placeholder="Group Name"/>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary">Add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+</div>

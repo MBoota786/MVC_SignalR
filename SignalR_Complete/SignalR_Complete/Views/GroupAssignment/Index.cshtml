@@ -1,49 +1,93 @@
 ﻿@model GroupAssignmentViewModel
 
-<h2>Group Assignment</h2>
 
-@using (Html.BeginForm("AssignUsers", "GroupAssignment", FormMethod.Post))
-{
-    <div>
-        <label for="groupId">Select Group:</label>
-        <select name="groupId" id="groupId">
-            @foreach (var group in Model.Groups)
+<div class="row">
+    <div class="col-9">
+        <h2>Assignment Users - Group Selection</h2>
+    </div>
+    <div class="col-3">
+        <a class="btn btn-success" asp-action="AddGroup">Add New Group</a>
+    </div>
+</div>
+
+<div>
+    @*@using (Html.BeginForm("Index", "GroupAssignment", FormMethod.Post))
+        {*@
+    <label for="groupId">Select Group:</label>
+    <select name="groupId" id="groupId">
+        <option value="">-- Select Group --</option>
+        @foreach (var group in Model.Groups)
+        {
+            if (group.Name == Model.SelectedGroup)
+            {
+                <option value="@group.Id" selected>@group.Name</option>
+            }
+            else
             {
                 <option value="@group.Id">@group.Name</option>
             }
-        </select>
-    </div>
-    <div>
-        <label for="userIds">Select Users:</label>
-        <select name="userIds" id="userIds" multiple>
-            @foreach (var user in Model.Users)
-            {
-                <option value="@user.Id">@user.UserName</option>
-            }
-        </select>
-    </div>
-    <div>
-        <button type="submit">Assign Users</button>
-    </div>
-}
+        }
+    </select>
+    @*<button type="submit">Fetch</button>*@
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function() {
-        $('#groupId').on('change', function() {
-            var groupId = $(this).val();
-            $.ajax({
-                url: '/GroupAssignment/GetGroupUsers',
-                type: 'GET',
-                data: { groupId: groupId },
-                success: function(response) {
-                    $('#userIds').empty();
-                    $.each(response.users, function(index, user) {
-                        var option = $('<option></option>').val(user.id).text(user.userName);
-                        $('#userIds').append(option);
+    @if (Model.Users == null)
+    {
+    }
+    else
+    {
+        <ul name="userId" id="userId">
+            @foreach (var user in Model.Users.ToList())
+            {
+                <li value="@user.Id">@user.UserName</li>
+            }
+        </ul>
+    }
+    @*}*@
+    <br />
+
+
+    <a class="btn btn-sm btn-primary">Edit</a>
+    
+</div>
+
+
+@section scripts{
+    
+        <script>
+            $('a.btn-primary').hide();
+            $(document).ready(function () {
+                $('#groupId').on('input', function () {
+                    var groupId = $(this).val();
+                    if (groupId === '') {
+                        // Clear the user selection
+                        $('a.btn-primary').hide();
+                        $('#userId').empty();
+                        return;
+                    }
+
+                    // Fetch the group users
+                    $.ajax({
+                        url: '/GroupAssignment/GetGroupUsers',
+                        type: 'GET',
+                        data: { groupId: groupId },
+                        success: function (response) {
+                            $('#userId').empty();
+                            console.log(response);
+                            $.each(response.users, function (index, user) {
+                                var listItem = $('<li></li>').attr('value', user.id).text(user.userName);
+                                $('#userId').append(listItem);
+                            });
+                        }
                     });
-                }
+
+                    // Update the "Edit" anchor tag URL with the selected group ID
+                    var editUrl = '/GroupAssignment/UserAssignment?groupId=' + groupId;
+                    $('a.btn-primary').attr('href', editUrl);
+                    // Show the "Edit" button
+                    $('a.btn-primary').show();
+                });
             });
-        });
-    });
-</script>
+        </script>
+    
+
+}
