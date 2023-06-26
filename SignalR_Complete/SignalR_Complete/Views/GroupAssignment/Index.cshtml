@@ -1,0 +1,49 @@
+﻿@model GroupAssignmentViewModel
+
+<h2>Group Assignment</h2>
+
+@using (Html.BeginForm("AssignUsers", "GroupAssignment", FormMethod.Post))
+{
+    <div>
+        <label for="groupId">Select Group:</label>
+        <select name="groupId" id="groupId">
+            @foreach (var group in Model.Groups)
+            {
+                <option value="@group.Id">@group.Name</option>
+            }
+        </select>
+    </div>
+    <div>
+        <label for="userIds">Select Users:</label>
+        <select name="userIds" id="userIds" multiple>
+            @foreach (var user in Model.Users)
+            {
+                <option value="@user.Id">@user.UserName</option>
+            }
+        </select>
+    </div>
+    <div>
+        <button type="submit">Assign Users</button>
+    </div>
+}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#groupId').on('change', function() {
+            var groupId = $(this).val();
+            $.ajax({
+                url: '/GroupAssignment/GetGroupUsers',
+                type: 'GET',
+                data: { groupId: groupId },
+                success: function(response) {
+                    $('#userIds').empty();
+                    $.each(response.users, function(index, user) {
+                        var option = $('<option></option>').val(user.id).text(user.userName);
+                        $('#userIds').append(option);
+                    });
+                }
+            });
+        });
+    });
+</script>
