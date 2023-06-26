@@ -16,6 +16,34 @@ namespace SignalR_Complete.Hubs
         {
             _dbContext = dbContext;
         }
+        public override async Task OnConnectedAsync()
+        {
+            var userId = Claims.User.Identity.Name;
+            var user = _dbContext.Users.FirstOrDefault(u => u.Id == userId);
+
+            if (user != null)
+            {
+                user.ConnectionId = Context.ConnectionId;
+                await _dbContext.SaveChangesAsync();
+            }
+
+            await base.OnConnectedAsync();
+        }
+        public override async Task OnDisconnectedAsync(Exception exception)
+        {
+            var userId = Context.User.Identity.Name;
+            var user = _dbContext.Users.FirstOrDefault(u => u.Id == userId);
+
+            if (user != null)
+            {
+                user.ConnectionId = null;
+                await _dbContext.SaveChangesAsync();
+            }
+
+            await base.OnDisconnectedAsync(exception);
+        }
+
+
 
         public async Task SendMessage(string userId, string message)
         {

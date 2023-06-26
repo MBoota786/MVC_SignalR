@@ -6,7 +6,9 @@
 <ul>
     @foreach (var user in Model.Users)
     {
-        <li>@user.UserName</li>
+        <li>
+            <a href="@Url.Action("Index", "Chat")?participantId=@user.Id">@user.UserName</a>
+        </li>
     }
 </ul>
 
