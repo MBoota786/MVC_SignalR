@@ -1,0 +1,111 @@
+﻿@model GroupChatViewModel
+
+<style>
+    #chat-messages {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 10px;
+    }
+
+    .message {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 5px;
+    }
+
+    .sender {
+        align-self: flex-end;
+        max-width:40%;
+        background-color: lightblue;
+        padding: 5px;
+        border-radius: 10px;
+        margin-left: 50px;
+    }
+
+    .receiver {
+        align-self: flex-start;
+        background-color: lightgreen;
+        padding: 5px;
+        border-radius: 10px;
+        margin-right: 50px;
+    }
+
+
+    .message span {
+        font-size: 12px;
+    }
+</style>
+
+<h1>@Model.Group.Name</h1>
+
+<div id="chat-messages">
+    @foreach (var message in Model.Messages)
+    {
+        var messageClass = (message.SenderId == ViewBag.senderId) ? "sender" : "receiver";
+    <div class="message @messageClass">
+        @if (@message.Sender != null)
+        {
+            <span style="color:gray">@message.Sender.UserName</span>
+        }
+        else
+        {
+            <span style="color:gray"></span>
+        }
+        <span style="font-weight:bolder;font-size:16px">@message.Message</span>
+        <span style="color:gray">@message.Timestamp.ToString("MM/dd/yyyy HH:mm:ss")</span>
+    </div>
+    }
+</div>
+
+<form id="chat-form">
+    <input type="text" id="message-input" />
+    <button type="submit">Send</button>
+</form>
+
+@section scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.9/signalr.min.js"></script>
+    <script>
+        var connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chatHub")
+            .build();
+
+        connection.on("ReceiveGroupMessage", function (groupId, senderId, message, timestamp, isCurrentUser) {
+            var senderName = isCurrentUser ? "You" : senderId;
+            var formattedTimestamp = new Date(timestamp).toLocaleString();
+
+            var messageElement = $("<div>").addClass("message");
+            var senderElement = $("<span>").addClass("sender").text(senderName);
+            var receiverElement = $("<span>").addClass("receiver").text(message);
+            var timestampElement = $("<span>").text(formattedTimestamp);
+
+            messageElement.append(senderElement);
+            messageElement.append(receiverElement);
+            messageElement.append(timestampElement);
+
+            $("#chat-messages").append(messageElement);
+        });
+
+        $("#chat-form").on("submit", function (event) {
+            event.preventDefault();
+
+            var groupId = @Model.Group.Id;
+            var message = $("#message-input").val();
+
+            connection.invoke("SendGroupMessage", groupId, message)
+                .catch(function (error) {
+                    console.error(error);
+                });
+
+            $("#message-input").val("");
+        });
+
+        connection.start()
+            .then(function () {
+                console.log("Connection started.");
+            })
+            .catch(function (error) {
+                console.error("Error starting connection: " + error);
+            });
+    </script>
+}

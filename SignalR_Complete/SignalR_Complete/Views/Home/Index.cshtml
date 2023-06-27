@@ -7,7 +7,7 @@
     @foreach (var user in Model.Users)
     {
         <li>
-            <a href="@Url.Action("Index", "Chat")?participantId=@user.Id">@user.UserName</a>
+            <a href="@Url.Action("Index", "ChatApp")?participantId=@user.Id">@user.UserName</a>
         </li>
     }
 </ul>
@@ -16,6 +16,8 @@
 <ul>
     @foreach (var group in Model.Groups)
     {
-        <li>@group.Name</li>
+        <li>
+            <a href="@Url.Action("Index", "GroupChat")?groupId=@group.Id">@group.Name</a>
+        </li>
     }
 </ul>

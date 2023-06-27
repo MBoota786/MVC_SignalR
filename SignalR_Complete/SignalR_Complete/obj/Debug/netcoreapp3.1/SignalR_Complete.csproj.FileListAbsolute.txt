@@ -780,4 +780,7 @@ D:\PK\Evolve\UI .net\SignalR_Complete\SignalR_Complete\obj\Debug\netcoreapp3.1\S
 D:\PK\Evolve\UI .net\SignalR_Complete\SignalR_Complete\obj\Debug\netcoreapp3.1\SignalR_Complete.genruntimeconfig.cache
 D:\PK\Evolve\UI .net\SignalR_Complete\SignalR_Complete\obj\Debug\netcoreapp3.1\Razor\Views\GroupAssignment\UserAssignment.cshtml.g.cs
 D:\PK\Evolve\UI .net\SignalR_Complete\SignalR_Complete\obj\Debug\netcoreapp3.1\Razor\Views\GroupAssignment\AddGroup.cshtml.g.cs
-D:\PK\Evolve\UI .net\SignalR_Complete\SignalR_Complete\obj\Debug\netcoreapp3.1\Razor\Views\Chat\Index.cshtml.g.cs
+D:\PK\Evolve\UI .net\SignalR_Complete\SignalR_Complete\bin\Debug\netcoreapp3.1\System.Net.WebSockets.WebSocketProtocol.dll
+D:\PK\Evolve\UI .net\SignalR_Complete\SignalR_Complete\obj\Debug\netcoreapp3.1\Razor\Views\ChatApp\Index.cshtml.g.cs
+D:\PK\Evolve\UI .net\SignalR_Complete\SignalR_Complete\bin\Debug\netcoreapp3.1\libman.json
+D:\PK\Evolve\UI .net\SignalR_Complete\SignalR_Complete\obj\Debug\netcoreapp3.1\Razor\Views\GroupChat\Index.cshtml.g.cs

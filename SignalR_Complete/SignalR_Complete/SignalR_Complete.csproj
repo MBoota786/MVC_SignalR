@@ -7,6 +7,29 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\lib\microsoft\signalr\dist\cjs\**" />
+    <Compile Remove="wwwroot\lib\microsoft\signalr\dist\esm\**" />
+    <Compile Remove="wwwroot\lib\microsoft\signalr\dist\webworker\**" />
+    <Compile Remove="wwwroot\lib\microsoft\signalr\src\**" />
+    <Content Remove="wwwroot\lib\microsoft\signalr\dist\cjs\**" />
+    <Content Remove="wwwroot\lib\microsoft\signalr\dist\esm\**" />
+    <Content Remove="wwwroot\lib\microsoft\signalr\dist\webworker\**" />
+    <Content Remove="wwwroot\lib\microsoft\signalr\src\**" />
+    <EmbeddedResource Remove="wwwroot\lib\microsoft\signalr\dist\cjs\**" />
+    <EmbeddedResource Remove="wwwroot\lib\microsoft\signalr\dist\esm\**" />
+    <EmbeddedResource Remove="wwwroot\lib\microsoft\signalr\dist\webworker\**" />
+    <EmbeddedResource Remove="wwwroot\lib\microsoft\signalr\src\**" />
+    <None Remove="wwwroot\lib\microsoft\signalr\dist\cjs\**" />
+    <None Remove="wwwroot\lib\microsoft\signalr\dist\esm\**" />
+    <None Remove="wwwroot\lib\microsoft\signalr\dist\webworker\**" />
+    <None Remove="wwwroot\lib\microsoft\signalr\src\**" />
+    <TypeScriptCompile Remove="wwwroot\lib\microsoft\signalr\dist\cjs\**" />
+    <TypeScriptCompile Remove="wwwroot\lib\microsoft\signalr\dist\esm\**" />
+    <TypeScriptCompile Remove="wwwroot\lib\microsoft\signalr\dist\webworker\**" />
+    <TypeScriptCompile Remove="wwwroot\lib\microsoft\signalr\src\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Data\Migrations\20230626110021_mg4.cs" />
     <Compile Remove="Data\Migrations\20230626110021_mg4.Designer.cs" />
   </ItemGroup>
@@ -19,6 +42,10 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.32" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.32" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.32" />
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.1.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
 </Project>

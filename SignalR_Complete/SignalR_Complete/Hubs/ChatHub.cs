@@ -18,7 +18,7 @@ namespace SignalR_Complete.Hubs
         }
         public override async Task OnConnectedAsync()
         {
-            var userId = Claims.User.Identity.Name;
+            var userId = Context.User.Identity.Name;
             var user = _dbContext.Users.FirstOrDefault(u => u.Id == userId);
 
             if (user != null)
@@ -48,7 +48,7 @@ namespace SignalR_Complete.Hubs
         public async Task SendMessage(string userId, string message)
         {
             // Save the private chat message in the database
-            var senderId = Context.User.Identity.Name;
+            var senderId = Context.UserIdentifier;
             var privateMessage = new PrivateMessage
             {
                 SenderId = senderId,
@@ -60,44 +60,86 @@ namespace SignalR_Complete.Hubs
             _dbContext.PrivateChat.Add(privateMessage);
             await _dbContext.SaveChangesAsync();
 
-            // Get the connection ID of the receiver
-            string receiverConnectionId = GetConnectionId(userId);
 
-            if (receiverConnectionId != null)
-            {
-                // Send the message to the receiver
-                await Clients.Client(receiverConnectionId).SendAsync("ReceiveMessage", senderId, message, privateMessage.Timestamp, false);
-            }
+            await Clients.User(userId).SendAsync("ReceiveMessage", Context.User.Identity.Name, message, false);
+            await Clients.Caller.SendAsync("ReceiveMessage", Context.User.Identity.Name, message, true);
+
+            // Get the connection ID of the receiver
+            //string receiverConnectionId = GetConnectionId(userId);
+
+            //if (receiverConnectionId != null)
+            //{
+            //    // Send the message to the receiver
+            //    await Clients.Client(receiverConnectionId).SendAsync("ReceiveMessage", senderId, message, privateMessage.Timestamp, false);
+            //}
         }
 
         public async Task SendGroupMessage(int groupId, string message)
         {
-            // Save the group chat message in the database
-            var senderId = Context.User.Identity.Name;
-            var groupMessage = new GroupMessage
+            try
             {
-                GroupId = groupId,
-                SenderId = senderId,
-                Message = message,
-                Timestamp = DateTime.Now
-            };
+                // Save the group chat message in the database
+                var senderId = Context.UserIdentifier;
+                //var senderId = Context.User.Identity.Name;
+                var groupMessage = new GroupMessage
+                {
+                    GroupId = groupId,
+                    SenderId = senderId,
+                    Message = message,
+                    Timestamp = DateTime.Now
+                };
 
-            _dbContext.GroupMessage.Add(groupMessage);
-            await _dbContext.SaveChangesAsync();
+                _dbContext.GroupMessage.Add(groupMessage);
+                await _dbContext.SaveChangesAsync();
 
-            // Get the connection IDs of the group members
-            List<string> connectionIds = GetGroupConnectionIds(groupId);
+                // Get the group members
+                var groupMembers = _dbContext.GroupUser
+                    .Where(gu => gu.GroupId == groupId && gu.UserId != senderId)
+                    .Select(gu => gu.UserId)
+                    .ToList();
 
-            if (connectionIds != null && connectionIds.Count > 0)
-            {
-                // Send the message to all group members
-                await Clients.Clients(connectionIds).SendAsync("ReceiveGroupMessage", groupId, senderId, message, groupMessage.Timestamp, false);
+                if (groupMembers.Count > 0)
+                {
+                    // Send the message to all group members
+                    foreach (var memberId in groupMembers)
+                    {
+                        await Clients.Users(memberId).SendAsync("ReceiveGroupMessage", groupId, senderId, message, groupMessage.Timestamp,false);
+                    }
+                }
+                await Clients.Caller.SendAsync("ReceiveGroupMessage", groupId, senderId, message, groupMessage.Timestamp, true);
             }
+            catch (Exception ex)
+            {
+                // Log or handle the exception
+                Console.WriteLine(ex.ToString());
+                throw; // Rethrow the exception if necessary
+            }
+            //// Save the group chat message in the database
+            //var senderId = Context.User.Identity.Name;
+            //var groupMessage = new GroupMessage
+            //{
+            //    GroupId = groupId,
+            //    SenderId = senderId,
+            //    Message = message,
+            //    Timestamp = DateTime.Now
+            //};
+
+            //_dbContext.GroupMessage.Add(groupMessage);
+            //await _dbContext.SaveChangesAsync();
+
+            //// Get the connection IDs of the group members
+            //List<string> connectionIds = GetGroupConnectionIds(groupId);
+
+            //if (connectionIds != null && connectionIds.Count > 0)
+            //{
+            //    // Send the message to all group members
+            //    await Clients.Clients(connectionIds).SendAsync("ReceiveGroupMessage", groupId, senderId, message, groupMessage.Timestamp, false);
+            //}
         }
 
         public async Task SendImage(string userId, byte[] imageBytes)
         {
-            // Save the image in the database
+            //Save the image in the database
             var senderId = Context.User.Identity.Name;
             var image = new Image
             {
@@ -111,13 +153,13 @@ namespace SignalR_Complete.Hubs
             await _dbContext.SaveChangesAsync();
 
             // Get the connection ID of the receiver
-            string receiverConnectionId = GetConnectionId(userId);
+            //string receiverConnectionId = GetConnectionId(userId);
 
-            if (receiverConnectionId != null)
-            {
-                // Send the image to the receiver
-                await Clients.Client(receiverConnectionId).SendAsync("ReceiveImage", senderId, imageBytes, image.Timestamp, false);
-            }
+            //if (receiverConnectionId != null)
+            //{
+            //    // Send the image to the receiver
+            //    await Clients.Client(receiverConnectionId).SendAsync("ReceiveImage", senderId, imageBytes, image.Timestamp, false);
+            //}
         }
 
         public async Task AddToGroup(int groupId)
@@ -181,13 +223,13 @@ namespace SignalR_Complete.Hubs
             await _dbContext.SaveChangesAsync();
 
             // Get the connection ID of the specified user
-            string userConnectionId = GetConnectionId(userId);
+            //string userConnectionId = GetConnectionId(userId);
 
-            if (userConnectionId != null)
-            {
-                // Send a signal to the specified user's client to update the read status of the messages
-                await Clients.Client(userConnectionId).SendAsync("MarkAsRead");
-            }
+            //if (userConnectionId != null)
+            //{
+            //    // Send a signal to the specified user's client to update the read status of the messages
+            //    await Clients.Client(userConnectionId).SendAsync("MarkAsRead");
+            //}
         }
 
         public async Task MarkGroupMessageAsRead(int groupId)
@@ -231,11 +273,11 @@ namespace SignalR_Complete.Hubs
 
         // Helper methods to retrieve connection IDs and group connection IDs
 
-        private string GetConnectionId(string userId)
-        {
-            var user = _dbContext.Users.FirstOrDefault(u => u.Id == userId);
-            return user.ConnectionId;
-        }
+        //private string GetConnectionId(string userId)
+        //{
+        //    var user = _dbContext.Users.FirstOrDefault(u => u.Id == userId);
+        //    return user.ConnectionId;
+        //}
 
         private List<string> GetGroupConnectionIds(int groupId)
         {

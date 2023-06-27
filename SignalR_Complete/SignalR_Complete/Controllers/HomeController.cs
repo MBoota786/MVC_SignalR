@@ -27,7 +27,7 @@ namespace SignalR_Complete.Controllers
         public IActionResult Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
+            
             // Get the signed-in user
             var user = _dbContext.Users.FirstOrDefault(u => u.Id == userId);
 
@@ -47,7 +47,7 @@ namespace SignalR_Complete.Controllers
 
             var model = new IndexViewModel
             {
-                Users = _dbContext.Users.ToList(),
+                Users = _dbContext.Users.Where(u => u.Id != user.Id).ToList(),
                 Groups = groups
             };
 
