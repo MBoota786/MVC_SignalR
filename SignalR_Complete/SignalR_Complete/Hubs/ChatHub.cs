@@ -72,6 +72,17 @@ namespace SignalR_Complete.Hubs
             //    await Clients.Client(receiverConnectionId).SendAsync("ReceiveMessage", senderId, message, privateMessage.Timestamp, false);
             //}
         }
+        public async Task DeleteSendMessage(int groupId, int messageId)
+        {
+            var userId = Context.UserIdentifier;
+            var message = _dbContext.GroupMessage.FirstOrDefault(gm => gm.Id == messageId && gm.GroupId == groupId && gm.SenderId == userId);
+            if (message != null)
+            {
+                _dbContext.GroupMessage.Remove(message);
+                await _dbContext.SaveChangesAsync();
+                await Clients.Group(groupId.ToString()).SendAsync("GroupMessageDeleted", groupId, messageId);
+            }
+        }
 
         public async Task SendGroupMessage(int groupId, string message)
         {
@@ -136,23 +147,17 @@ namespace SignalR_Complete.Hubs
             //}
         }
 
-        public async Task DeleteGroupMessage(int groupId, int messageId)
+        public async Task DeleteGroupMessages(int groupId, int messageId )
         {
             var userId = Context.UserIdentifier;
             var message = _dbContext.GroupMessage.FirstOrDefault(gm => gm.Id == messageId && gm.GroupId == groupId && gm.SenderId == userId);
-
             if (message != null)
             {
                 _dbContext.GroupMessage.Remove(message);
                 await _dbContext.SaveChangesAsync();
-
                 await Clients.Group(groupId.ToString()).SendAsync("GroupMessageDeleted", groupId, messageId);
             }
-            //Notify the clients that the message has been deleted
         }
-
-
-
 
         public async Task SendImage(string userId, byte[] imageBytes)
         {
