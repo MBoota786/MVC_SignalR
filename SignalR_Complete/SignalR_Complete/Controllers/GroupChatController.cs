@@ -27,9 +27,9 @@ namespace SignalR_Complete.Controllers
             var user = _dbContext.Users.Where(x => x.UserName == currentUser).FirstOrDefault();
             ViewBag.senderId = user.Id;
 
-            
+
             var group = _dbContext.Group.Include(g => g.GroupUsers).FirstOrDefault(g => g.Id == groupId);
-            var group1 = _dbContext.Group.Include(g => g.GroupUsers).FirstOrDefault(g => g.Id == groupId);
+            
 
             if (group == null)
             {
@@ -46,9 +46,11 @@ namespace SignalR_Complete.Controllers
                 .OrderBy(gm => gm.Timestamp)
                 .ToList();
 
+            ViewBag.users = user;
+
             var model = new GroupChatViewModel
             {
-                User = user,
+                User = _dbContext.Users.ToList(),
                 Group = group,
                 Messages = messages
             };
@@ -56,91 +58,18 @@ namespace SignalR_Complete.Controllers
             return View(model);
         }
 
-        //[HttpPost]
-        //public IActionResult SendGroupMessage(int groupId, string message)
-        //{
-        //    var userId = User.Identity.Name;
-        //    var group = _dbContext.Group.FirstOrDefault(g => g.Id == groupId);
+        [HttpGet]
+        public string GetUserName(string userId)
+        {
+            // Fetch the username based on the userId from your data source
+            var userName = _dbContext.Users
+                .Where(u => u.Id == userId)
+                .Select(u => u.UserName)
+                .FirstOrDefault();
 
-        //    if (group == null)
-        //    {
-        //        return NotFound();
-        //    }
+            return userName;
+        }
 
-        //    if (!_dbContext.GroupUser.Any(gu => gu.GroupId == groupId && gu.UserId == userId))
-        //    {
-        //        return Forbid();
-        //    }
 
-        //    var groupMessage = new GroupMessage
-        //    {
-        //        GroupId = groupId,
-        //        SenderId = userId,
-        //        Message = message,
-        //        Timestamp = DateTime.Now
-        //    };
-
-        //    _dbContext.GroupMessage.Add(groupMessage);
-        //    _dbContext.SaveChanges();
-
-        //    var connectionIds = _dbContext.GroupUser
-        //        .Where(gu => gu.GroupId == groupId && gu.UserId != userId)
-        //        .Select(gu => gu.User.ConnectionId)
-        //        .ToList();
-
-        //    var isRead = false;
-        //    if (connectionIds != null && connectionIds.Count > 0)
-        //    {
-        //        isRead = true;
-        //    }
-
-        //    foreach (var connectionId in connectionIds)
-        //    {
-        //        Clients.Client(connectionId).SendAsync("ReceiveGroupMessage", groupId, userId, message, groupMessage.Timestamp, isRead);
-        //    }
-
-        //    return Ok();
-        //}
-
-        //[HttpPost]
-        //public IActionResult MarkGroupMessageAsRead(int groupId)
-        //{
-        //    var userId = User.Identity.Name;
-
-        //    var groupUsers = _dbContext.GroupUser
-        //        .Where(gu => gu.GroupId == groupId && gu.UserId == userId)
-        //        .ToList();
-
-        //    if (groupUsers.Count > 0)
-        //    {
-        //        var groupMessageIds = _dbContext.GroupMessage
-        //            .Where(gm => gm.GroupId == groupId && !gm.IsReaded)
-        //            .Select(gm => gm.Id)
-        //            .ToList();
-
-        //        var groupMessages = _dbContext.GroupMessage
-        //            .Where(gm => groupMessageIds.Contains(gm.Id))
-        //            .ToList();
-
-        //        foreach (var message in groupMessages)
-        //        {
-        //            message.IsReaded = true;
-        //        }
-
-        //        _dbContext.SaveChanges();
-
-        //        var connectionIds = _dbContext.GroupUser
-        //            .Where(gu => gu.GroupId == groupId && gu.UserId != userId)
-        //            .Select(gu => gu.User.ConnectionId)
-        //            .ToList();
-
-        //        foreach (var connectionId in connectionIds)
-        //        {
-        //            Clients.Client(connectionId).SendAsync("MarkAsRead");
-        //        }
-        //    }
-
-        //    return Ok();
-        //}
     }
 }

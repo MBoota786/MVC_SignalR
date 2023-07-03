@@ -15,7 +15,7 @@
 
     .sender {
         align-self: flex-end;
-        max-width:40%;
+        max-width: 40%;
         background-color: lightblue;
         padding: 5px;
         border-radius: 10px;
@@ -42,18 +42,23 @@
     @foreach (var message in Model.Messages)
     {
         var messageClass = (message.SenderId == ViewBag.senderId) ? "sender" : "receiver";
-    <div class="message @messageClass">
-        @if (@message.Sender != null)
-        {
-            <span style="color:gray">@message.Sender.UserName</span>
-        }
-        else
-        {
+        <div class="message @messageClass" data-message-id="@message.Id">
+
+            @foreach (var users in Model.User)
+            {
+                if (users.Id == message.SenderId)
+                {
+                    <span style="color:gray">@users.UserName</span>
+                }
+            }
             <span style="color:gray"></span>
-        }
-        <span style="font-weight:bolder;font-size:16px">@message.Message</span>
-        <span style="color:gray">@message.Timestamp.ToString("MM/dd/yyyy HH:mm:ss")</span>
-    </div>
+            <span style="font-weight:bolder;font-size:16px">@message.Message</span>
+            <span style="color:gray">@message.Timestamp.ToString("MM/dd/yyyy HH:mm:ss")</span>
+            @if (message.SenderId == ViewBag.senderId)
+            {
+                <button class="btn btn-sm btn-danger" style="width:30px" onclick="deleteGroupMessage('@message.Id')"><i class="fa fa-trash">D</i></button>
+            }
+        </div>
     }
 </div>
 
@@ -63,25 +68,39 @@
 </form>
 
 @section scripts {
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.9/signalr.min.js"></script>
+    <script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
+
     <script>
         var connection = new signalR.HubConnectionBuilder()
-            .withUrl("/chatHub")
+            .withUrl("/chatHub", {
+                skipNegotiation: true,
+                transport: signalR.HttpTransportType.WebSockets
+            })
             .build();
 
+  
+
         connection.on("ReceiveGroupMessage", function (groupId, senderId, message, timestamp, isCurrentUser) {
-            var senderName = isCurrentUser ? "You" : senderId;
+            var senderName = isCurrentUser ? "You" : GetDisplayName(senderId);
             var formattedTimestamp = new Date(timestamp).toLocaleString();
 
             var messageElement = $("<div>").addClass("message");
-            var senderElement = $("<span>").addClass("sender").text(senderName);
-            var receiverElement = $("<span>").addClass("receiver").text(message);
+            var senderElement = $("<span>").addClass(GetMessageClass(senderId)).text(senderName + ":");
+            var messageTextElement = $("<span>").text(message).css({"font-weight": "bold", "font-size": "16px"});
             var timestampElement = $("<span>").text(formattedTimestamp);
 
             messageElement.append(senderElement);
-            messageElement.append(receiverElement);
+            messageElement.append(messageTextElement);
             messageElement.append(timestampElement);
+
+
+            if (isCurrentUser) {
+                messageElement.addClass("sender");
+            } else {
+                messageElement.addClass("receiver");
+            }
 
             $("#chat-messages").append(messageElement);
         });
@@ -93,11 +112,12 @@
             var message = $("#message-input").val();
 
             connection.invoke("SendGroupMessage", groupId, message)
+                .then(function () {
+                    $("#message-input").val(""); // Clear the input field after sending the message
+                })
                 .catch(function (error) {
                     console.error(error);
                 });
-
-            $("#message-input").val("");
         });
 
         connection.start()
@@ -107,5 +127,47 @@
             .catch(function (error) {
                 console.error("Error starting connection: " + error);
             });
+
+        function GetMessageClass(senderId) {
+            var currentUser = '@User.Identity.Name';
+            return senderId === currentUser ? "sender" : "receiver";
+        }
+
+        function GetDisplayName(senderId) {
+            var currentUser = '@User.Identity.Name';
+
+            // Make an AJAX request to fetch the username based on the senderId
+            return $.ajax({
+                url: '/GroupChat/GetUserName',
+                data: { userId: senderId },
+                async: false
+            }).responseText;
+        }
+
+
+
+         function deleteGroupMessage(messageId) {
+            var groupId = @Model.Group.Id;
+            alert(groupId);
+            alert(messageId);
+
+            if (confirm("Are you sure you want to delete this message?")) {
+
+                connection.invoke("DeleteGroupMessage")
+                    .catch(function (error) {
+                        console.error(error);
+                    });
+            }
+        }
+
+        connection.on("GroupMessageDeleted", function (deletedGroupId, deletedMessageId) {
+            if (deletedGroupId === @Model.Group.Id) {
+                // Find the message element with the deletedMessageId and remove it from the DOM
+                $("#chat-messages").find(".message[data-message-id='" + deletedMessageId + "']").remove();
+            }
+        });
+
+
+
     </script>
 }

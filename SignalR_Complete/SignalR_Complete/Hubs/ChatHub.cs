@@ -44,7 +44,6 @@ namespace SignalR_Complete.Hubs
         }
 
 
-
         public async Task SendMessage(string userId, string message)
         {
             // Save the private chat message in the database
@@ -136,6 +135,24 @@ namespace SignalR_Complete.Hubs
             //    await Clients.Clients(connectionIds).SendAsync("ReceiveGroupMessage", groupId, senderId, message, groupMessage.Timestamp, false);
             //}
         }
+
+        public async Task DeleteGroupMessage(int groupId, int messageId)
+        {
+            var userId = Context.UserIdentifier;
+            var message = _dbContext.GroupMessage.FirstOrDefault(gm => gm.Id == messageId && gm.GroupId == groupId && gm.SenderId == userId);
+
+            if (message != null)
+            {
+                _dbContext.GroupMessage.Remove(message);
+                await _dbContext.SaveChangesAsync();
+
+                await Clients.Group(groupId.ToString()).SendAsync("GroupMessageDeleted", groupId, messageId);
+            }
+            //Notify the clients that the message has been deleted
+        }
+
+
+
 
         public async Task SendImage(string userId, byte[] imageBytes)
         {

@@ -7,7 +7,7 @@ namespace SignalR_Complete.Models
 {
     public class GroupChatViewModel
     {
-        public AppUser User { get; set; }
+        public List<AppUser> User { get; set; }
         public Group Group { get; set; }
         public List<GroupMessage> Messages { get; set; }
     }
