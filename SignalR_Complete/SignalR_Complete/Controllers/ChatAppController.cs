@@ -23,28 +23,45 @@ namespace SignalR_Complete.Controllers
 
 
         [Authorize]
-        public IActionResult Index(string participantId)
+        public IActionResult Index(string receiverId)
         {
             var userName = User.Identity.Name;
             var currentUsers = _dbContext.Users.Where(x=>x.UserName == userName).FirstOrDefault();
-            var participant = _dbContext.Users.FirstOrDefault(u => u.Id == participantId);
+            var receiver = _dbContext.Users.FirstOrDefault(u => u.Id == receiverId);
 
-            if (participant == null)
+            if (receiver == null)
             {
                 return NotFound();
             }
 
             var messages = _dbContext.PrivateMessage
                             .Include(x => x.Sender)
-                            .Where(pm => (pm.SenderId == currentUsers.Id && pm.ReceiverId == participantId) ||
-                                            (pm.SenderId == participantId && pm.ReceiverId == currentUsers.Id))
+                            .Where(pm => (pm.SenderId == currentUsers.Id && pm.ReceiverId == receiverId) ||
+                                            (pm.SenderId == receiverId && pm.ReceiverId == currentUsers.Id))
                             .OrderBy(pm => pm.Timestamp)
                             .ToList();
+
+            foreach (var message in messages)
+            {
+                if (message.SenderId == currentUsers.Id)
+                {
+                    message.IsSender = true;
+                    message.IsReceiver = false;
+                }
+                else
+                {
+                    message.IsSender = false;
+                    message.IsReceiver = true;
+                }
+            }
+
+            ViewBag.ReceiverId = receiverId;
+            ViewBag.ReceiverName = receiver.Email;
 
             var model = new ChatViewModel
             {
                 User = _dbContext.Users.FirstOrDefault(u => u.Id == currentUsers.Id),
-                Participant = participant,
+                Recever = receiver,
                 Messages = messages
             };
 

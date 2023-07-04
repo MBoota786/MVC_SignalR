@@ -331,6 +331,12 @@ namespace SignalR_Complete.Data.Migrations
                     b.Property<bool>("IsReaded")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsReceiver")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsSender")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Message")
                         .HasColumnType("nvarchar(max)");
 

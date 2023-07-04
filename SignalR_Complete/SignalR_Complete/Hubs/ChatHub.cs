@@ -43,47 +43,60 @@ namespace SignalR_Complete.Hubs
             await base.OnDisconnectedAsync(exception);
         }
 
-
+        //_______________ Private _________
         public async Task SendMessage(string userId, string message)
         {
             // Save the private chat message in the database
+            //var senderId = Context.UserIdentifier;
+            //var privateMessage = new PrivateMessage
+            //{
+            //    SenderId = senderId,
+            //    ReceiverId = userId,
+            //    Message = message,
+            //    Timestamp = DateTime.Now
+            //};
+
+            //_dbContext.PrivateChat.Add(privateMessage);
+            //await _dbContext.SaveChangesAsync();
+
+
+            //await Clients.User(userId).SendAsync("ReceiveMessage", Context.User.Identity.Name, message, false);
+            //await Clients.Caller.SendAsync("ReceiveMessage", Context.User.Identity.Name, message, true);
+
+
             var senderId = Context.UserIdentifier;
-            var privateMessage = new PrivateMessage
+            var messages = new PrivateMessage
             {
                 SenderId = senderId,
                 ReceiverId = userId,
                 Message = message,
-                Timestamp = DateTime.Now
+                Timestamp = DateTime.Now,
+                IsSender = true,
+                IsReaded = false,
+                IsReceiver = false
             };
 
-            _dbContext.PrivateChat.Add(privateMessage);
+            await _dbContext.PrivateMessage.AddAsync(messages);
             await _dbContext.SaveChangesAsync();
-
 
             await Clients.User(userId).SendAsync("ReceiveMessage", Context.User.Identity.Name, message, false);
             await Clients.Caller.SendAsync("ReceiveMessage", Context.User.Identity.Name, message, true);
-
-            // Get the connection ID of the receiver
-            //string receiverConnectionId = GetConnectionId(userId);
-
-            //if (receiverConnectionId != null)
-            //{
-            //    // Send the message to the receiver
-            //    await Clients.Client(receiverConnectionId).SendAsync("ReceiveMessage", senderId, message, privateMessage.Timestamp, false);
-            //}
         }
-        public async Task DeleteSendMessage(int groupId, int messageId)
+        public async Task DeletePrivateChatMessage(int messageId)
         {
+            //go Login ha  --> Wohi  user Apnaa Messages Delete kr skaa ha
             var userId = Context.UserIdentifier;
-            var message = _dbContext.GroupMessage.FirstOrDefault(gm => gm.Id == messageId && gm.GroupId == groupId && gm.SenderId == userId);
+            var message = _dbContext.PrivateChat.FirstOrDefault(pm => pm.Id == messageId && pm.SenderId == userId);
+
             if (message != null)
             {
-                _dbContext.GroupMessage.Remove(message);
+                _dbContext.PrivateChat.Remove(message);
                 await _dbContext.SaveChangesAsync();
-                await Clients.Group(groupId.ToString()).SendAsync("GroupMessageDeleted", groupId, messageId);
+                await Clients.All.SendAsync("MessageDeleted", messageId , userId);
             }
         }
 
+        //_______________ Group _________
         public async Task SendGroupMessage(int groupId, string message)
         {
             try
@@ -108,15 +121,17 @@ namespace SignalR_Complete.Hubs
                     .Select(gu => gu.UserId)
                     .ToList();
 
+                var groupMessageId = groupMessage.Id;
+
                 if (groupMembers.Count > 0)
                 {
                     // Send the message to all group members
                     foreach (var memberId in groupMembers)
                     {
-                        await Clients.Users(memberId).SendAsync("ReceiveGroupMessage", groupId, senderId, message, groupMessage.Timestamp,false);
+                        await Clients.Users(memberId).SendAsync("ReceiveGroupMessage", groupId, senderId, groupMessageId, message, groupMessage.Timestamp,false);
                     }
                 }
-                await Clients.Caller.SendAsync("ReceiveGroupMessage", groupId, senderId, message, groupMessage.Timestamp, true);
+                await Clients.Caller.SendAsync("ReceiveGroupMessage", groupId, senderId, groupMessageId, message,groupMessage.Id, groupMessage.Timestamp, true);
             }
             catch (Exception ex)
             {
@@ -146,7 +161,6 @@ namespace SignalR_Complete.Hubs
             //    await Clients.Clients(connectionIds).SendAsync("ReceiveGroupMessage", groupId, senderId, message, groupMessage.Timestamp, false);
             //}
         }
-
         public async Task DeleteGroupMessages(int groupId, int messageId )
         {
             var userId = Context.UserIdentifier;
@@ -155,9 +169,12 @@ namespace SignalR_Complete.Hubs
             {
                 _dbContext.GroupMessage.Remove(message);
                 await _dbContext.SaveChangesAsync();
-                await Clients.Group(groupId.ToString()).SendAsync("GroupMessageDeleted", groupId, messageId);
+                //await Clients.Group(groupId.ToString()).SendAsync("GroupMessageDeleted", groupId, messageId);
+                await Clients.All.SendAsync("GroupMessageDeleted", groupId, messageId);
             }
         }
+
+
 
         public async Task SendImage(string userId, byte[] imageBytes)
         {

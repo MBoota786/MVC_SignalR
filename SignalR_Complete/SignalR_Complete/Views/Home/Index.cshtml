@@ -7,7 +7,7 @@
     @foreach (var user in Model.Users)
     {
         <li>
-            <a href="@Url.Action("Index", "ChatApp")?participantId=@user.Id">@user.UserName</a>
+            <a href="@Url.Action("Index", "ChatApp")?receiverId=@user.Id">@user.UserName</a>
         </li>
     }
 </ul>

@@ -56,17 +56,31 @@
             <span style="color:gray">@message.Timestamp.ToString("MM/dd/yyyy HH:mm:ss")</span>
             @if (message.SenderId == ViewBag.senderId)
             {
-                <button class="btn btn-sm btn-danger delete-button" style="width:30px" data-id="@message.Id" onclick="deleteGroupMessage('@message.Id')">
-                    <i class="fa fa-trash">D</i>
-                </button>
+                <div class="row justify-content-end mr-1">
+                    <button class="btn delete-button" data-id="@message.Id">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
             }
         </div>
     }
 </div>
 
 <form id="chat-form">
-    <input type="text" id="message-input" />
-    <button type="submit">Send</button>
+    <div class="row">
+        <div class="col-10">
+            <textarea id="message-input" rows="2" class="form-control border-primary"></textarea>
+        </div>
+        <div class="col-2">
+            <button type="button" class="btn border-primary h-100" style="max-height: 50px; min-width: 45px;margin-top:2px" >
+                <i class="fa-solid fa-file-image"></i>
+            </button>
+            <button type="submit" class="btn border-primary h-100" style="max-height: 50px; min-width: 45px; margin-top: 2px">
+                <i class="fa-solid fa-paper-plane" style="font-size:22px"></i>
+            </button>
+        </div>
+    </div>
+    
 </form>
 
 @section scripts {
@@ -75,6 +89,7 @@
     <script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
 
     <script>
+        //_______________________  SignalR Connection _________________________
         var connection = new signalR.HubConnectionBuilder()
             .withUrl("/chatHub", {
                 skipNegotiation: true,
@@ -82,16 +97,26 @@
             })
             .build();
 
+        //____ Testing Connection _____
+        connection.start()
+            .then(function () {
+                console.log("Connection started.");
+            })
+            .catch(function (error) {
+                console.error("Error starting connection: " + error);
+            });
 
 
-        connection.on("ReceiveGroupMessage", function (groupId, senderId, message, timestamp, isCurrentUser) {
+        //_______________________  Sending Message _________________________
+        connection.on("ReceiveGroupMessage", function (groupId, senderId,groupMessageId, message, timestamp, isCurrentUser) {
             var senderName = isCurrentUser ? "You" : GetDisplayName(senderId);
             var formattedTimestamp = new Date(timestamp).toLocaleString();
 
-            var messageElement = $("<div>").addClass("message");
+            var messageElement = $("<div>").addClass("message").attr("data-message-id",groupMessageId);
             var senderElement = $("<span>").addClass(GetMessageClass(senderId)).text(senderName + ":");
             var messageTextElement = $("<span>").text(message).css({"font-weight": "bold", "font-size": "16px"});
             var timestampElement = $("<span>").text(formattedTimestamp);
+
 
             messageElement.append(senderElement);
             messageElement.append(messageTextElement);
@@ -99,6 +124,12 @@
 
 
             if (isCurrentUser) {
+                var trashDiv = $("<div>").addClass("row justify-content-end mr-1");
+                var trashButton = $("<button>").addClass("btn delete-button").attr("data-id", groupMessageId);
+                var trashIcon = $("<i>").addClass("fa-solid fa-trash");
+                trashButton.append(trashIcon);
+                trashDiv.append(trashButton);
+                messageElement.append(trashDiv);
                 messageElement.addClass("sender");
             } else {
                 messageElement.addClass("receiver");
@@ -122,14 +153,8 @@
                 });
         });
 
-        connection.start()
-            .then(function () {
-                console.log("Connection started.");
-            })
-            .catch(function (error) {
-                console.error("Error starting connection: " + error);
-            });
 
+        //_______________________  Getting UserName for  Onload ,  Sending button _________________________
         function GetMessageClass(senderId) {
             var currentUser = '@User.Identity.Name';
             return senderId === currentUser ? "sender" : "receiver";
@@ -147,37 +172,8 @@
         }
 
 
-        connection.on("GroupMessageDeleted", function (deletedGroupId, deletedMessageId) {
-            if (deletedGroupId === @Model.Group.Id) {
-                // Find the message element with the deletedMessageId and remove it from the DOM
-                $("#chat-messages").find(".message[data-message-id='" + deletedMessageId + "']").remove();
-            }
-        });
-
-        $(".delete-button").on("click", function (event) {
-            var groupId = @Model.Group.Id;
-            var messageId = $(this).attr("data-id");
-
-            alert(groupId);
-            alert(messageId);
-            var gId = parseInt(groupId);
-            var mId = parseInt(messageId);
-
-
-            if (confirm("Are you sure you want to delete this message?")) {
-
-                connection.invoke("DeleteGroupMessages",gId,mId)
-                .then(function () {
-                    $("#message-input").val(""); // Clear the input field after sending the message
-                })
-                .catch(function (error) {
-                    console.error(error);
-                });
-            }
-        })
-
-
-         @*function deleteGroupMessage(messageId) {
+        //___________ Not good way to trriger delte button _______________
+        @*function deleteGroupMessage(messageId) {
             var groupId = @Model.Group.Id;
             alert(groupId);
             alert(messageId);
@@ -193,22 +189,65 @@
                 });
             }
         }*@
-        // Update the event handler for GroupMessageDeleted
+
+        //___ will Not work if  Message is Generating by  JS on Sending button _______
+        @*$(".delete-button").on("click", function (event) {
+            var groupId = @Model.Group.Id;
+            var messageId = $(this).attr("data-id");
+
+            var gId = parseInt(groupId);
+            var mId = parseInt(messageId);
+
+            if (confirm("Are you sure you want to delete this message?")) {
+                connection.invoke("DeleteGroupMessages",gId,mId)
+                .then(function () {
+                    $("#message-input").val(""); // Clear the input field after sending the message
+                })
+                .catch(function (error) {
+                    console.error(error);
+                });
+            }
+        })*@
+
+
         connection.on("GroupMessageDeleted", function (deletedGroupId, deletedMessageId) {
             if (deletedGroupId === @Model.Group.Id) {
+                // Find the message element with the deletedMessageId and remove it from the DOM
                 $("#chat-messages").find(".message[data-message-id='" + deletedMessageId + "']").remove();
             }
         });
 
-        // Start the SignalR connection
-        connection.start().then(function () {
-            console.log("SignalR connection established.");
-        }).catch(function (error) {
-            console.error("Error starting SignalR connection: " + error);
+
+        //______ to Delete  JS  text at runtime ____
+        $(document).on("click", ".delete-button", function (event) {
+            var groupId = @Model.Group.Id;
+            var messageId = $(this).attr("data-id");
+
+            var gId = parseInt(groupId);
+            var mId = parseInt(messageId);
+
+            if (confirm("Are you sure you want to delete this message?")) {
+                connection.invoke("DeleteGroupMessages", gId, mId)
+                    .then(function () {
+                        // Optional: You can remove the message from the UI immediately without waiting for the server response.
+                        $("#chat-messages").find(".message[data-message-id='" + messageId + "']").remove();
+
+                        $("#message-input").val(""); // Clear the input field after sending the message
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                    });
+             }
+         });
+
+        //__________ Onload  Go to end of page ___________
+        $(document).ready(function() {
+            // Scroll to the end of the page
+            $("html, body").animate({ scrollTop: $(document).height() }, "slow");
+
+            // Rest of your code...
+
+            // SignalR Connection and other code...
         });
-
-
-
-
     </script>
 }

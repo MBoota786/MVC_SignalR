@@ -1,54 +1,136 @@
-﻿@model ChatViewModel
+﻿@*@model ChatViewModel
 
-<h1>Private Chat</h1>
-<h3>@User.Identity.Name</h3>
+    <h1>Private Chat</h1>
+    <h3>@User.Identity.Name</h3>
 
-<div id="chatContainer">
-    <div id="chatMessages">
-        @foreach (var message in Model.Messages)
-        {
-            <p>@message.Sender.UserName: @message.Message</p>
-        }
-    </div>
-    <div id="chatInput">
-        <input type="text" id="messageInput" />
-        <button type="button" id="sendButton">Send</button>
-    </div>
-</div>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
-
-<script>
-    $(document).ready(function() {
-        var connection = new signalR.HubConnectionBuilder().withUrl('/chatHub').build();
-
-        connection.on('ReceiveMessage', function(senderId, message, timestamp, isRead) {
-            var senderUserName = '@Model.Participant.UserName';
-            if (senderId === '@Model.Participant.Id') {
-                senderUserName = '@Model.User.UserName';
+    <div id="chatContainer">
+        <div id="chatMessages">
+            @foreach (var message in Model.Messages)
+            {
+                <p>@message.Sender.UserName: @message.Message</p>
             }
-            var formattedTimestamp = new Date(timestamp).toLocaleTimeString();
-            var messageContent = '<p>' + senderUserName + ': ' + message + ' (' + formattedTimestamp + ')' + '</p>';
-            $('#chatMessages').append(messageContent);
+        </div>
+        <div id="chatInput">
+            <input type="text" id="messageInput" />
+            <button type="button" id="sendButton">Send</button>
+        </div>
+    </div>
 
-            if (!isRead) {
-                connection.invoke('MarkPrivateMessageAsRead', senderId);
-            }
-        });
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-        connection.start().catch(function(err) {
-            return console.error(err.toString());
-        });
+    <script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
 
-        $('#sendButton').on('click', function () {
-            var message = $('#messageInput').val();
-            connection.invoke('SendMessage', '@Model.Participant.Id', message).catch(function(err) {
+    <script>
+        $(document).ready(function() {
+            var connection = new signalR.HubConnectionBuilder().withUrl('/chatHub').build();
+
+            connection.on('ReceiveMessage', function(senderId, message, timestamp, isRead) {
+                var senderUserName = '@Model.Participant.UserName';
+                if (senderId === '@Model.Participant.Id') {
+                    senderUserName = '@Model.User.UserName';
+                }
+                var formattedTimestamp = new Date(timestamp).toLocaleTimeString();
+                var messageContent = '<p>' + senderUserName + ': ' + message + ' (' + formattedTimestamp + ')' + '</p>';
+                $('#chatMessages').append(messageContent);
+
+                if (!isRead) {
+                    connection.invoke('MarkPrivateMessageAsRead', senderId);
+                }
+            });
+
+            connection.start().catch(function(err) {
                 return console.error(err.toString());
             });
 
-            $('#messageInput').val('');
+            $('#sendButton').on('click', function () {
+                var message = $('#messageInput').val();
+                connection.invoke('SendMessage', '@Model.Participant.Id', message).catch(function(err) {
+                    return console.error(err.toString());
+                });
+
+                $('#messageInput').val('');
+            });
         });
-    });
-</script>
+    </script>
+*@
+
+
+@model ChatViewModel
+
+<link href="~/css/message.css" rel="stylesheet" />
+
+<h1>Conversation with @ViewBag.ReceiverName</h1>
+
+<div id="container">
+    @foreach (var message in Model.Messages)
+    {
+        var messageClass = message.IsSender ? "message-orange" : "message-blue";
+        var messageTimeSend = message.IsSender ? "message-timestamp-right" : "message-timestamp-left";
+        <div class="@messageClass">
+            <p class="message-content">@message.Message</p>
+        </div>
+    }
+</div>
+
+
+<form id="sendMessageForm">
+    <div class="row">
+        <div class="col-10">
+            <input type="hidden" id="receiverId" value="@ViewBag.ReceiverId" />
+            <textarea rows="2" class="form-control border-primary" id="messageInput"></textarea>
+        </div>
+        <div class="col-2">
+            <button type="button" class="btn border-primary h-100" style="max-height: 50px; min-width: 45px;margin-top:2px">
+                <i class="fa-solid fa-file-image"></i>
+            </button>
+            <button type="submit" class="btn border-primary h-100" style="max-height: 50px; min-width: 45px; margin-top: 2px">
+                <i class="fa-solid fa-paper-plane" style="font-size:22px"></i>
+            </button>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @*<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>*@
+
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            var connection = new signalR.HubConnectionBuilder().withUrl("/chathub").build();
+
+            connection.start().then(function () {
+                console.log("SignalR connected.");
+            }).catch(function (err) {
+                return console.error(err.toString());
+            });
+
+            $("#sendMessageForm").on("submit", function (event) {
+                event.preventDefault();
+                var receiverId = $("#receiverId").val();
+                var content = $("#messageInput").val();
+                connection.invoke("SendMessage", receiverId, content).catch(function (err) {
+                    return console.error(err.toString());
+                });
+                $("#messageInput").val("");
+            });
+
+            connection.on("ReceiveMessage", function (senderName, content, isSender) {
+                var messageClass = isSender ? "message-orange" : "message-blue";
+                var messageContent = "<p class='" + messageClass + "'>" + senderName + ": " + content + "</p>";
+                $("#container").append(messageContent);
+            });
+        });
+
+        //__________ Onload  Go to end of page ___________
+        $(document).ready(function() {
+            // Scroll to the end of the page
+            $("html, body").animate({ scrollTop: $(document).height() }, "slow");
+
+            // Rest of your code...
+
+            // SignalR Connection and other code...
+        });
+    </script>
+}
