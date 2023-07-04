@@ -75,12 +75,15 @@ namespace SignalR_Complete.Hubs
                 IsReaded = false,
                 IsReceiver = false
             };
-
             await _dbContext.PrivateMessage.AddAsync(messages);
             await _dbContext.SaveChangesAsync();
 
-            await Clients.User(userId).SendAsync("ReceiveMessage", Context.User.Identity.Name, message, false);
-            await Clients.Caller.SendAsync("ReceiveMessage", Context.User.Identity.Name, message, true);
+            var messageId = messages.Id;
+            var timeStamp = messages.Timestamp.ToString("M/d/yyyy h:m:s tt");
+            var receverId = messages.ReceiverId;
+
+            await Clients.User(userId).SendAsync("ReceiveMessage", Context.User.Identity.Name , receverId, messageId, message, timeStamp, false);
+            await Clients.Caller.SendAsync("ReceiveMessage", Context.User.Identity.Name, receverId, messageId, message, timeStamp, true);
         }
         public async Task DeletePrivateChatMessage(int messageId)
         {
@@ -92,7 +95,7 @@ namespace SignalR_Complete.Hubs
             {
                 _dbContext.PrivateChat.Remove(message);
                 await _dbContext.SaveChangesAsync();
-                await Clients.All.SendAsync("MessageDeleted", messageId , userId);
+                await Clients.All.SendAsync("MessageDeleted" , userId, messageId);
             }
         }
 

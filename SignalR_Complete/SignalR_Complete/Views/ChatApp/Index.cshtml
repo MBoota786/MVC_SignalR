@@ -66,8 +66,42 @@
     {
         var messageClass = message.IsSender ? "message-orange" : "message-blue";
         var messageTimeSend = message.IsSender ? "message-timestamp-right" : "message-timestamp-left";
-        <div class="@messageClass">
-            <p class="message-content">@message.Message</p>
+        <div class="message @messageClass" data-message-id="@message.Id">
+            <small>
+                @if (message.SenderId == Model.Recever.Id)
+                {
+                    @Model.Recever.UserName
+                }
+                else
+                {
+                    @Model.User.UserName
+
+                }
+            </small>
+            <p class="message-content mt-2" style="font-size:18px;font-weight:bold">
+                @message.Message
+            </p>
+            @if (message.SenderId == Model.User.Id)
+            {
+                <div class="row mt-2">
+                    <div class="col-9">
+                        <small>@message.Timestamp</small>
+                    </div>
+                    <div class="col-3">
+                        <button class="bg-transparent border-0 delete-button" data-id="@message.Id">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="row mt-2">
+                    <div class="col-9">
+                        <small>@message.Timestamp</small>
+                    </div>
+                </div>
+            }
         </div>
     }
 </div>
@@ -91,37 +125,115 @@
 </form>
 
 @section Scripts {
-    @*<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>*@
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <script src="~/lib/jquery/dist/jquery.js"></script>
+    @*<script src="~/lib/jquery/dist/jquery.js"></script>*@
     <script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
 
     <script>
-        $(document).ready(function () {
-            var connection = new signalR.HubConnectionBuilder().withUrl("/chathub").build();
 
-            connection.start().then(function () {
-                console.log("SignalR connected.");
-            }).catch(function (err) {
+        //_______________________  SignalR Connection _________________________
+        var connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chatHub", {
+                skipNegotiation: true,
+                transport: signalR.HttpTransportType.WebSockets
+            })
+            .build();
+
+        //____ Testing Connection _____
+        connection.start()
+            .then(function () {
+                console.log("Connection started.");
+            })
+            .catch(function (error) {
+                console.error("Error starting connection: " + error);
+            });
+
+
+        //_______________________  Send Message _________________________
+        $("#sendMessageForm").on("submit", function (event) {
+            event.preventDefault();
+            var receiverId = $("#receiverId").val();
+            var content = $("#messageInput").val();
+            connection.invoke("SendMessage", receiverId, content).catch(function (err) {
                 return console.error(err.toString());
             });
-
-            $("#sendMessageForm").on("submit", function (event) {
-                event.preventDefault();
-                var receiverId = $("#receiverId").val();
-                var content = $("#messageInput").val();
-                connection.invoke("SendMessage", receiverId, content).catch(function (err) {
-                    return console.error(err.toString());
-                });
-                $("#messageInput").val("");
-            });
-
-            connection.on("ReceiveMessage", function (senderName, content, isSender) {
-                var messageClass = isSender ? "message-orange" : "message-blue";
-                var messageContent = "<p class='" + messageClass + "'>" + senderName + ": " + content + "</p>";
-                $("#container").append(messageContent);
-            });
+            $("#messageInput").val("");
         });
+
+        @*connection.on("ReceiveMessage", function (senderName,messageId, message, isSender) {
+                var messageClass = isSender ? "message-orange" : "message-blue";
+                var messageContent = "<p class='" + messageClass + "'>" + senderName + ": " + message + "</p>";
+                $("#container").append(messageContent);
+          });
+        *@
+        connection.on("ReceiveMessage", function (senderName,receverId,messageId, message,timeStamp, isSender) {
+                var messageClass = isSender ? "message-orange" : "message-blue";
+                var messageContent = `
+                    <div class='message ${messageClass}' data-message-id='${messageId}'>
+                        <small>
+                            ${senderName}
+                        </small>
+                        <p class="message-content mt-2" style="font-size:18px;font-weight:bold">
+                            ${message}
+                        </p>
+                        ${
+                           (receverId == '@Model.User.Id') ? 
+                            `<div class="row mt-2">
+                                <div class="col-9">
+                                    <small>${timeStamp}</small>
+                                </div>
+                            </div>`
+                           :
+                            `<div class="row mt-2">
+                                <div class="col-9">
+                                    <small>${timeStamp}</small>
+                                </div>
+                                <div class="col-3">
+                                    <button class="bg-transparent border-0 delete-button" data-id="${messageId}">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>`
+                         }
+                    </div>
+                `;
+                $("#container").append(messageContent);
+          });
+
+
+
+
+        //_______________________  Send Message _________________________
+        //______ delete on both End ____
+        connection.on("MessageDeleted", function (userId, deletedMessageId) {
+            if (userId === "@Model.Recever.Id") {
+                // Find the message element with the deletedMessageId and remove it from the DOM
+                $("#container").find(".message[data-message-id='" + deletedMessageId + "']").remove();
+            }
+        });
+
+        //______ invoke signalR method ____
+        $(document).on("click", ".delete-button", function (event) {
+            var messageId = $(this).attr("data-id");
+            var mId = parseInt(messageId);
+
+            if (confirm("Are you sure you want to delete this message?")) {
+                connection.invoke("DeletePrivateChatMessage", mId)
+                    .then(function () {
+                        // Optional: You can remove the message from the UI immediately without waiting for the server response.
+                        $("#container").find(".message[data-message-id='" + mId + "']").remove();
+
+                        $("#messageInput").val(""); // Clear the input field after sending the message
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                    });
+             }
+
+         });
+
+
 
         //__________ Onload  Go to end of page ___________
         $(document).ready(function() {

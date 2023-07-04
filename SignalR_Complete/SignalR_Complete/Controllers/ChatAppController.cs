@@ -60,7 +60,7 @@ namespace SignalR_Complete.Controllers
 
             var model = new ChatViewModel
             {
-                User = _dbContext.Users.FirstOrDefault(u => u.Id == currentUsers.Id),
+                User = currentUsers,//_dbContext.Users.FirstOrDefault(u => u.Id == currentUsers.Id),
                 Recever = receiver,
                 Messages = messages
             };
