@@ -16,10 +16,11 @@ namespace SignalR_Complete.Hubs
         {
             _dbContext = dbContext;
         }
+
         public override async Task OnConnectedAsync()
         {
-            var userId = Context.User.Identity.Name;
-            var user = _dbContext.Users.FirstOrDefault(u => u.Id == userId);
+            var userName = Context.User.Identity.Name;
+            var user = _dbContext.Users.FirstOrDefault(u => u.UserName == userName);
 
             if (user != null)
             {
@@ -29,10 +30,11 @@ namespace SignalR_Complete.Hubs
 
             await base.OnConnectedAsync();
         }
+
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            var userId = Context.User.Identity.Name;
-            var user = _dbContext.Users.FirstOrDefault(u => u.Id == userId);
+            var userName = Context.User.Identity.Name;
+            var user = _dbContext.Users.FirstOrDefault(u => u.UserName == userName);
 
             if (user != null)
             {
@@ -98,6 +100,7 @@ namespace SignalR_Complete.Hubs
                 await Clients.All.SendAsync("MessageDeleted" , userId, messageId);
             }
         }
+
 
         //_______________ Group _________
         public async Task SendGroupMessage(int groupId, string message)
